@@ -2,6 +2,7 @@ import os
 from flask import request, jsonify
 from app import create_app
 from .validation import Validation
+from .wrappers import json_required
 
 
 config_name = os.getenv('FLASK_ENV')
@@ -32,4 +33,12 @@ def wrongURL(resource, methods=['get'], id=None, action=None):
         res = Validation().validateRoute(resource)
     elif request.method not in methods:
         res = [405, 'error', 'wrong method']
+    return jsonify({'Status': res[0], res[1]: res[2]}), res[0]
+
+
+@app.route('/api/v1/red_flags', methods=['POST'])
+@json_required
+def create_flag():
+    data = request.json
+    res = Validation().validateNew(data)
     return jsonify({'Status': res[0], res[1]: res[2]}), res[0]
