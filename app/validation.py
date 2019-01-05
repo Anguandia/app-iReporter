@@ -30,6 +30,16 @@ class Validation:
             res = [400, 'error', f'wrong url, check \'{resource}\'']
             return res
 
+    def validateBasics(self, data):
+        for field in ['location', 'comment', 'createdBy', 'title']:
+            if field not in data:
+                return [
+                    400, 'error',
+                    f'{field} field missing, invalid key or incorrect'
+                    ]
+            elif not data[field]:
+                return [400, 'error', 'please submit {}'.format(field)]
+
     def validateDuplicate(self, data):
         flags = Implementation().get_flags()[2]
         for flag in flags:
@@ -50,15 +60,9 @@ class Validation:
                     ]
 
     def validateNew(self, data):
-        for field in ['location', 'comment', 'createdBy']:
-            if field not in data:
-                return [
-                    400, 'error',
-                    f'{field} field missing, invalid key or incorrect'
-                    ]
-            elif not data[field]:
-                return [400, 'error', 'please submit {}'.format(field)]
-        if self.validateDescriptive(data):
+        if self.validateBasics(data):
+            result = self.validateBasics(data)
+        elif self.validateDescriptive(data):
             result = self.validateDescriptive(data)
         elif self.bad_type(data):
             result = self.bad_type(data)
