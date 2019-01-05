@@ -30,6 +30,14 @@ class Validation:
             res = [400, 'error', f'wrong url, check \'{resource}\'']
             return res
 
+    def validateDescriptive(self, data):
+        for field in ['location', 'comment', 'title']:
+            if field and not self.validateInt(
+                    data[field]):
+                return [
+                    400, 'error', f'{field} must be descriptive'
+                    ]
+
     def validateNew(self, data):
         for field in ['location', 'comment', 'createdBy']:
             if field not in data:
@@ -39,15 +47,17 @@ class Validation:
                     ]
             elif not data[field]:
                 return [400, 'error', 'please submit {}'.format(field)]
-        if self.bad_type(data):
+        if self.validateDescriptive(data):
+            result = self.validateDescriptive(data)
+        elif self.bad_type(data):
             result = self.bad_type(data)
         else:
             result = Implementation().create(data)
         return result
 
-    def validateId(self, id):
+    def validateInt(self, value):
         try:
-            int(id)
+            int(value)
         except Exception:
             return 'id must be a number'
 

@@ -289,3 +289,10 @@ def test_correct_response_wrong_method_for_update(client):
             client, '/api/v1/red_flags/1/comment', {'comment': 'any'}
             )
     assert json_of_response(response)['error'] == 'wrong method'
+
+
+# Test to check that re flag with descriptive fields supplied with non
+# descriptive data will not be created, error flagged
+def test_validate_descriptive_fields_on_create(client):
+    res = post_json(client, '/api/v1/red_flags', dat['invalidComment'])
+    assert json_of_response(res)['error'] == 'comment must be descriptive'

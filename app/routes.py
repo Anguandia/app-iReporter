@@ -54,8 +54,8 @@ def get_flags():
 @app.route('/api/v1/red_flags/<red_flag_id>', methods=[
     'get', 'delete'])
 def single_flag(red_flag_id):
-    if Validation().validateId(red_flag_id):
-        res = [400, 'error', Validation().validateId(red_flag_id)]
+    if Validation().validateInt(red_flag_id):
+        res = [400, 'error', Validation().validateInt(red_flag_id)]
     elif request.method == 'GET':
         res = Implementation().get_flag(red_flag_id)
     elif request.method == 'DELETE':
