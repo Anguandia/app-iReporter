@@ -24,9 +24,6 @@ class Validation:
                     400, 'error',
                     f'{field} should be of type {self.data_types[field]}'
                     ]
-            # check forinvalid keys in data
-            # elif field not in self.data_types:
-            #    return [400, 'error', f'unknown input {field}']
 
     def validateRoute(self, resource):
         if resource != 'red_flags':
