@@ -30,6 +30,17 @@ class Validation:
             res = [400, 'error', f'wrong url, check \'{resource}\'']
             return res
 
+    def validateDuplicate(self, data):
+        flags = Implementation().get_flags()[2]
+        for flag in flags:
+            if data['location'] in flag['location'] and data['title']\
+                    == flag['title']:
+                return [
+                    200, 'data', [
+                        {'id': flag['id'], 'message': 'red flag exists'}
+                        ]
+                    ]
+
     def validateDescriptive(self, data):
         for field in ['location', 'comment', 'title']:
             if field and not self.validateInt(
@@ -51,6 +62,8 @@ class Validation:
             result = self.validateDescriptive(data)
         elif self.bad_type(data):
             result = self.bad_type(data)
+        elif self.validateDuplicate(data):
+            result = self.validateDuplicate(data)
         else:
             result = Implementation().create(data)
         return result
