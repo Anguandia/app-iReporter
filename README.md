@@ -1,5 +1,7 @@
 # app-iReporter
 
+[![Build Status](https://travis-ci.com/Anguandia/app-iReporter.svg?branch=develop)](https://travis-ci.com/Anguandia/app-iReporter)
+
 **INTRODUCTION**
 
 This is the server side implementation of an online events logging system meant to work with any user interface that will communicate through JSON.
