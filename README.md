@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/Anguandia/app-iReporter.svg?branch=develop)](https://travis-ci.com/Anguandia/app-iReporter)
 [![Coverage Status](https://coveralls.io/repos/github/Anguandia/app-iReporter/badge.svg)](https://coveralls.io/github/Anguandia/app-iReporter)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7405228269881aa69536/maintainability)](https://codeclimate.com/github/Anguandia/app-iReporter/maintainability)
 
 **INTRODUCTION**
 
