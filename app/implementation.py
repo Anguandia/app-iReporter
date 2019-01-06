@@ -41,7 +41,7 @@ class Implementation:
     def edit(self, red_flag_id, data, field):
         red_flag = self.get_flag(red_flag_id)[2]
         if len(red_flag) == 0:
-            res = [400, 'error', 'red flag not found']
+            res = [404, 'error', 'red flag not found']
         elif red_flag[0]['status'] in ['rejected', 'resolved']:
             res = [
                 403, 'error', f'red flag already {red_flag[0]["status"]}'
