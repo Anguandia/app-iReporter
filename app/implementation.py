@@ -8,11 +8,11 @@ red_flags = {}
 class Implementation:
     def create(self, data):
         others = {
-            'type': 'red-flag', 'status': 'draft', 'videos': '', 'images': ''
-            }
+            'type': 'red-flag', 'status': 'draft', 'videos': '', 'images': '',
+            'comment': ''}
         red_flag = RedFlag(
             (len(red_flags)+1), data['location'], data['createdBy'],
-            data['comment']
+            data['title']
             )
         red_flag.__setattr__('createdOn', datetime.datetime.now())
         for key in others:
@@ -26,10 +26,7 @@ class Implementation:
             ]
 
     def get_flags(self):
-        if not red_flags.keys():
-            res = [404, 'error', 'no red flags']
-        else:
-            res = [200, 'data', [red_flags[key] for key in red_flags.keys()]]
+        res = [200, 'data', [red_flags[key] for key in red_flags.keys()]]
         return res
 
     def get_flag(self, red_flag_id):
@@ -38,36 +35,35 @@ class Implementation:
             res = [200, 'data', [red_flag]]
         except Exception as e:
             print(e)
-            res = [404, 'error', 'red flag not found']
+            res = [200, 'data', []]
         return res
 
     def edit(self, red_flag_id, data, field):
-        try:
-            red_flag = red_flags[str(red_flag_id)]
-            if red_flag['status'] in ['rejected', 'resolved']:
-                return [
-                    403, 'error', f'red flag already {red_flag["status"]}'
-                    ]
-            elif field == 'location' and 'geolocation' not in\
-                    red_flag['location']:
-                red_flag['location'] += ' ' + data['location']
-                res = 'added'
-            elif field == 'location' and 'geolocation' in red_flag['location']:
-                red_flag['location'] =\
-                        red_flag['location'][:red_flag['location'].index(
-                            'geolocation')] + data['location']
-                res = 'updated'
-            else:
-                red_flag[field] = data[field]
-                res = 'updated'
-            if isinstance(res, str):
-                result = [200, 'data', [{
-                    'id': int(red_flag_id), 'message':
-                    f'{res} red-flag record\'s {field}'}]]
-            else:
-                result = res
-        except Exception:
-            result = self.get_flag(red_flag_id)
+        red_flag = self.get_flag(red_flag_id)[2]
+        if len(red_flag) == 0:
+            res = [400, 'error', 'red flag not found']
+        elif red_flag[0]['status'] in ['rejected', 'resolved']:
+            res = [
+                403, 'error', f'red flag already {red_flag[0]["status"]}'
+                ]
+        elif field == 'location' and 'geolocation' not in red_flag[0][
+                'location']:
+            red_flag[0]['location'] += ' ' + data['location']
+            res = 'added'
+        elif field == 'location' and 'geolocation' in red_flag[0]['location']:
+            red_flag[0]['location'] =\
+                    red_flag[0]['location'][:red_flag[0]['location'].index(
+                        'geolocation')] + data['location']
+            res = 'updated'
+        else:
+            red_flag[0][field] = data[field]
+            res = 'updated'
+        if isinstance(res, str):
+            result = [200, 'data', [{
+                'id': int(red_flag_id), 'message':
+                f'{res} red-flag record\'s {field}'}]]
+        else:
+            result = res
         return result
 
     def delete(self, red_flag_id):
