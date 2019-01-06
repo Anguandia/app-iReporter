@@ -300,3 +300,11 @@ def test_validate_duplicate(client):
 def test_validate_descriptive_fields_on_create(client):
     res = post_json(client, '/api/v1/red_flags', dat['invalidComment'])
     assert json_of_response(res)['error'] == 'comment must be descriptive'
+
+
+def test_status_validation(client):
+    post_json(client, '/api/v1/red_flags', dat['basic'])
+    response = patch_json(
+            client, '/api/v1/red_flags/1/status', {'status': 'unknown'}
+            )
+    assert json_of_response(response)['error'] == 'invalid status'
