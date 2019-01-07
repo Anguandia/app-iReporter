@@ -205,8 +205,11 @@ A lot of contribution and mentoring from the learning facilitators at the Andela
 ### PRODUCT LINKS AND RELATED INFORMATION
 
 Code on github: [https://github.com/Anguandia/app-ireporter]
+
 Heroku link: [https://fast-ravine-44023.herokuapp.com/]
+
 Pivotal tracker: [https://www.pivotaltracker.com/n/projects/2232384] Contains the project plan, implementation and management details
+
 Documentation: [https://app.swaggerhub.com/apis/Anguandia/default-title/1#] Technical documentation of application detailing usage, parameters, expected behavior, requests and responses, etc.
 
 Licencing: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
