@@ -11,18 +11,29 @@ class Validation:
         'type': str,
         'location': str,
         'status': str,
-        'Images': str,
-        'Videos': str,
         'comment': str
         }
 
     def bad_type(self, data):
+        ret = None
         for field in data:
             if field in self.data_types and not isinstance(
                     data[field], self.data_types[field]):
-                return [
+                ret = [
                     400, 'error',
                     f'{field} should be of type {self.data_types[field]}'
+                    ]
+            if field in ['images', 'videos']:
+                ret = self.validatePictures(data[field])
+            if ret:
+                return ret
+
+    def validatePictures(self, pics):
+        for pic in pics:
+            if not isinstance(pic, str):
+                return [
+                    400, 'error',
+                    f"'{pic}' should be a valid image path"
                     ]
 
     def validateRoute(self, resource):
@@ -79,10 +90,48 @@ class Validation:
             return 'id must be a number'
 
     def validateEdit(self, data, red_flag_id, field):
+        if self.validateField(field):
+            result = self.validateField(field)
+        elif self.validateEditable(red_flag_id):
+            result = self.validateEditable(red_flag_id)
+        elif self.validateData(field, data):
+            result = self.validateData(field, data)
+        elif field == 'status' and self.validateStatus(data):
+            result = self.validateStatus(data)
+        elif field == 'location':
+            result = self.validateGeoloc(red_flag_id, data)
+        else:
+            result = Implementation().edit(red_flag_id, data, field)
+        return result
+
+    def validateStatus(self, data):
+        if data['status'] not in [
+                'under investigation', 'resolved', 'rejected']:
+            return [400, 'error', 'invalid status']
+
+    '''to be editable, target must exist and not be in status 'resolved' or
+    'rejected'''
+    def validateEditable(self, id):
+        # initialize return value to none
+        ret = None
+        # check if update target is available
+        flag = Implementation().get_flag(id)[2]
+        if flag == []:
+            ret = [404, 'error', 'red flag not found']
+        # check if target is not resolved or rejected
+        elif flag[0]['status'] in ['resolved', 'rejected']:
+            ret = [
+                403, 'error', f'red flag already {flag[0]["status"]}'
+                ]
+        return ret
+
+    # check if end point specified correctly
+    def validateField(self, field):
         if field not in ['location', 'comment', 'status']:
-            result = [400, 'error', f'wrong endpoint \'{field}\'']
-        # check error in data key vs endpoint specification
-        elif field not in data:
+            return [400, 'error', f'wrong endpoint \'{field}\'']
+
+    def validateData(self, field, data):
+        if field not in data:
             result = [
               400, 'error',
               f'{field} key missing, check your input or url'
@@ -90,16 +139,27 @@ class Validation:
         # safeguard against accidental deleting of field data
         elif not data[field]:
             result = [400, 'error', f'submit new {field}']
-        elif field == 'location' and ' ' in data['location']:
-            d = data['location'].split(' ')
+        else:
+            result = None
+        return result
+
+    def validateGeoloc(self, red_flag_id, data):
+        d = data['location'].split(',')
+        if ',' not in data['location']:
+            result = [
+                400, 'error',
+                "location must be of format'latitude <comma> longitude'"
+                ]
+        elif self.validateGeolocType(d):
+            result = self.validateGeolocType(d)
+        else:
             result = Implementation().edit(red_flag_id, {
                 'location': 'geolocation ' + f'N: {d[0]}, E: {d[1]}'},
                 'location')
-        elif field == 'location' and ' ' not in data['location']:
-            result = [
-                400, 'error',
-                "location must be of format'latitude <space> longitude'"
-                ]
-        else:
-            result = Implementation().edit(red_flag_id, data, field)
         return result
+
+    def validateGeolocType(self, goeloc):
+        try:
+            [float(i) for i in goeloc]
+        except Exception:
+            return [400, 'error', 'coordinates must be floats']
