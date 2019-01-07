@@ -60,7 +60,7 @@ The URLs are of the general format protocol://domain/version-prefix/path
 ##### *Summary of valid URL paths*
   - /api/v1/red_flags: create a red flag or get all red flags
   - /api/v1/red_flags/red_flag_id: get or delete red flag specified by red_flag_id
-  - /api/v1/red_flags/red_flag_id/endpoint: update property endpoint of red flag specified by red_flag_id or if endpoint is delete, delete selected red flag 
+  - /api/v1/red_flags/red_flag_id/endpoint: update property endpoint of red flag specified by red_flag_id
    
 ### DETAILS
 ##### *Create red-flag:*
