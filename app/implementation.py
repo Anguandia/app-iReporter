@@ -1,6 +1,5 @@
 from .models import RedFlag
 import datetime
-import re
 
 red_flags = {}
 
@@ -8,7 +7,7 @@ red_flags = {}
 class Implementation:
     def create(self, data):
         others = {
-            'type': 'red-flag', 'status': 'draft', 'videos': '', 'images': '',
+            'type': 'red-flag', 'status': 'draft', 'videos': [], 'images': [],
             'comment': ''}
         red_flag = RedFlag(
             (len(red_flags)+1), data['location'], data['createdBy'],
@@ -38,38 +37,28 @@ class Implementation:
             res = [200, 'data', []]
         return res
 
-    def edit(self, red_flag_id, data, field):
-        red_flag = self.get_flag(red_flag_id)[2]
-        if len(red_flag) == 0:
-            res = [400, 'error', 'red flag not found']
-        elif red_flag[0]['status'] in ['rejected', 'resolved']:
-            res = [
-                403, 'error', f'red flag already {red_flag[0]["status"]}'
-                ]
-        elif field == 'location' and 'geolocation' not in red_flag[0][
+    def edit(self, id, data, field):
+        flag = self.get_flag(id)[2]
+        if field == 'location' and 'geolocation' not in flag[0][
                 'location']:
-            red_flag[0]['location'] += ' ' + data['location']
+            flag[0]['location'] += ' ' + data['location']
             res = 'added'
-        elif field == 'location' and 'geolocation' in red_flag[0]['location']:
-            red_flag[0]['location'] =\
-                    red_flag[0]['location'][:red_flag[0]['location'].index(
+        elif field == 'location' and 'geolocation' in flag[0]['location']:
+            flag[0]['location'] =\
+                    flag[0]['location'][:flag[0]['location'].index(
                         'geolocation')] + data['location']
             res = 'updated'
         else:
-            red_flag[0][field] = data[field]
+            flag[0][field] = data[field]
             res = 'updated'
-        if isinstance(res, str):
-            result = [200, 'data', [{
-                'id': int(red_flag_id), 'message':
+        return [200, 'data', [{
+                'id': int(id), 'message':
                 f'{res} red-flag record\'s {field}'}]]
-        else:
-            result = res
-        return result
 
-    def delete(self, red_flag_id):
+    def delete(self, id):
         try:
-            red_flags.pop(str(red_flag_id))
-            res = [200, 'data', [{'id': int(red_flag_id), 'message':
+            red_flags.pop(str(id))
+            res = [200, 'data', [{'id': int(id), 'message':
                                  'red-flag record has been deleted'}]]
         except Exception:
             res = [404, 'error', 'red flag not found']
