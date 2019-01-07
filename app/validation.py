@@ -11,18 +11,29 @@ class Validation:
         'type': str,
         'location': str,
         'status': str,
-        'Images': str,
-        'Videos': str,
         'comment': str
         }
 
     def bad_type(self, data):
+        ret = None
         for field in data:
             if field in self.data_types and not isinstance(
                     data[field], self.data_types[field]):
-                return [
+                ret = [
                     400, 'error',
                     f'{field} should be of type {self.data_types[field]}'
+                    ]
+            if field in ['images', 'videos']:
+                ret = self.validatePictures(data[field])
+            if ret:
+                return ret
+
+    def validatePictures(self, pics):
+        for pic in pics:
+            if not isinstance(pic, str):
+                return [
+                    400, 'error',
+                    f"'{pic}' should be a valid image path"
                     ]
 
     def validateRoute(self, resource):

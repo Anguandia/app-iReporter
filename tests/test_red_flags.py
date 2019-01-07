@@ -308,3 +308,9 @@ def test_status_validation(client):
             client, '/api/v1/red_flags/1/status', {'status': 'unknown'}
             )
     assert json_of_response(response)['error'] == 'invalid status'
+
+
+def test_validate_image(client):
+    resp = post_json(client, '/api/v1/red_flags', dat['video'])
+    assert json_of_response(resp)['error'] ==\
+        "'256' should be a valid image path"
