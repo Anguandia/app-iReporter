@@ -144,14 +144,22 @@ class Validation:
         return result
 
     def validateGeoloc(self, red_flag_id, data):
-        if ' ' not in data['location']:
+        d = data['location'].split(',')
+        if ',' not in data['location']:
             result = [
                 400, 'error',
-                "location must be of format'latitude <space> longitude'"
+                "location must be of format'latitude <comma> longitude'"
                 ]
+        elif self.validateGeolocType(d):
+            result = self.validateGeolocType(d)
         else:
-            d = data['location'].split(' ')
             result = Implementation().edit(red_flag_id, {
                 'location': 'geolocation ' + f'N: {d[0]}, E: {d[1]}'},
                 'location')
         return result
+
+    def validateGeolocType(self, goeloc):
+        try:
+            [float(i) for i in goeloc]
+        except Exception:
+            return [400, 'error', 'coordinates must be floats']

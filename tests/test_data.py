@@ -17,5 +17,7 @@ dat = {
         "location": "here", "createdBy": 1, "comment": "flooding",
         "title": "floods", "images": [
             "http://google.com/images/cat.jpeg", 256,
-            "file/images/desert.jpeg"]}
+            "file/images/desert.jpeg"]},
+    'bad_coord': {'location': 'three,thirty'},
+    'gud_coord': {'location': '03,31'}
 }
