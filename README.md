@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Anguandia/app-iReporter/badge.svg)](https://coveralls.io/github/Anguandia/app-iReporter)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7405228269881aa69536/maintainability)](https://codeclimate.com/github/Anguandia/app-iReporter/maintainability)
 
-**INTRODUCTION**
+### INTRODUCTION
 
 This is the server side implementation of an online events logging system meant to work with any user interface that will communicate through JSON.
 
@@ -13,20 +13,20 @@ corruption incidences coined as **red flags** and occurences that need intervent
 
 This current phase of the prject however focuses on modelling the red flags component of the entire application
 
-**FEATURES AND OPERATIONS**
+### FEATURES AND OPERATIONS
 
 The current application takes in client report data to produce and store report records that can the be retrieved, some fields updated and records deleted. Details in Details section
 
-*Operations summary*
+##### *Operations summary*
 
 The following operations are provided for in the current version of the application:
-- Create: POST/red_flags
+- Create a red flag record
 - Get all red flags
 - Get a given red flag by id
 - Update either of the location, status, or comment of a particular red flag selected by id
 - Delete a given red flag nselected by id
 
-*Error handling:*
+##### *Error handling:*
 Rigorous checks against the followin errors with appropriate responses as detailed in the [documentation](https://app.swaggerhub.com/apis/Anguandia/default-title/1):
 - Creating duplicate records
 - Invoking wrong actions for valid routes
@@ -35,16 +35,16 @@ Rigorous checks against the followin errors with appropriate responses as detail
 - Requests to operate on non existent records
 - Empty/wrong format intput where input is required
 
-*Scope*
+##### *Scope*
 
 The application has no user component, authentication or authorization in this version but provides for full manipulation of records
 
-*User experience:*
+##### *User experience:*
 
 User experience is at the core of the design.The application furnishes informative responses to every request, pointing out possible errors in requests if not executed.
 responses are of two general categories; request success feedback and error responses, each producing the response code, requested resource (if required and successful) and the appropriate response message
 
-**URLs AND API VERSIONING**
+### URLs AND API VERSIONING
 
 The URLs are of the general format protocol://domain/version-prefix/path
 - Protocol: https for cloud hosting and http for local hosting
@@ -57,147 +57,152 @@ The URLs are of the general format protocol://domain/version-prefix/path
   - endpoint: Specifies one of the record's properties of 'location', 'comment' and 'status' for update operations. Depending on user interface, may have to be explicitly supplied in the URL.
   Endpoint also specifies delete for a delete action on the specified record
   
-[1]: *Summary of valid URL paths*
+##### *Summary of valid URL paths*
   - /api/v1/red_flags: create a red flag or get all red flags
   - /api/v1/red_flags/red_flag_id: get or delete red flag specified by red_flag_id
   - /api/v1/red_flags/red_flag_id/endpoint: update property endpoint of red flag specified by red_flag_id or if endpoint is delete, delete selected red flag 
-  
-[2]:  
-**DETAILS**  
-1. *Create red-flag:*
-
-    *URL-PATH:* /red_flags
-
-    *Method:* POST
-    
-    *Request body:*
-
-    The request body MUST at the very minimum contain values for red-flag properties of location, comment, and createdBy.
-     - location: name of the place of occurrence of the alert event, can not be only integers, must be descriptive
-     - comment: description of the event being reported, must be descriptive, can be detailed
-     - createdBy: Identity of the user raising the alert. This will become fully automated when the user module is incorporated,as of this version, only any integer input will work
-     - title: a one-line summary of the incident
    
-    *Responses:*
-  
-     - If any of the required properties is missed, miss spelled, value not provided or value of wrong type provided, a corresponding response will be returned. Else, the record is created, with additional attributes filled with defaults and success response message returned.
-     - Of the remaining attributes, type(for record type), image and video can be explicitly supplied, while the remaining; id(record id), createdOn(time of reporting) and status(initially as draft) are system generated
- 
-2. *Get all red flags:*
+### DETAILS
+##### *Create red-flag:*
 
-    *URL-PATH:* protocal://domain/api/v1/red_flags
+    URL-PATH: /red_flags
+
+    Method: POST
+    
+    Request body:
+
+    The request body MUST contain values for red-flag properties of location, comment, and createdBy.
+     location: name of the place of occurrence of the alert event, can not be only integers, must be descriptive
+     comment: description of the event being reported, must be descriptive, can be detailed
+     createdBy: Identity of the user raising the alert.
+     title: a one-line summary of the incident
+   
+    Responses:
   
-    *Method:* GET
+     If any of errors, a corresponding response will be returned. Else, the record is created.
+     Additional attributes are filled with defaults and success response message returned.
+     Of the remaining attributes, type, image and video can be explicitly supplied.
+     The remaining, id, createdOn and status are system generated
+ 
+##### *Get all red flags:*
+
+    URL-PATH: protocal://domain/api/v1/red_flags
   
-    *Responses:*
+    Method: GET
+  
+    Responses:
   
     This fetches and returns an array of all records along if any record() else an empty array
 
-3. *Get individual record:*
+##### *Get individual record:*
 
-    *URL-PATH:* /red_flags/<red_flag_id>. red_flag_id must be an integer
+    URL-PATH: /red_flags/<red_flag_id>. red_flag_id must be an integer
   
-    *Method:* GET
+    Method: GET
   
-    *Responses:*
+    Responses:
   
-    With an integer id of an existing record, fetches and returns the given record if exists, else returns an empty array,else if error in red_flag_id or resource name, returns appropriate error message
+    With an integer id of an existing record, returns single element array of the given record
+    If non existent, an empty array
+    Else if error in red_flag_id or resource name, returns appropriate error message
   
-4. *Edit a given record:*
+##### *Edit a given record:*
 
-    *URL-PATH:* /red_flags/<red_flag_id>/<property>
+    URL-PATH: /red_flags/<red_flag_id>/<property>
  
-    *Method:* PATCH
+    Method: PATCH
   
-    *Request body:*
+    Request body:
   
-    The location value fore edit must be a string containing only the latitude and longitude respectively separated by a single space, else a corresponding error response will be returned.
+    The location value fore edit must be a string.
+    Format: latitude,longitude
     
-    *Action and responses*
+    Action and responses
     
-     - Updates the specified attribute of the record with the given id.
-     - Editing the status or comment of a record will overwrite current values with the supplied values.
-     - Updating the location will append geolocation coordinates to the physical address given during creation of the record if no coordinates in record or overwrite existing coordinates. 
-     - any errors will invoke appropriate responses
+    Updates the specified attribute of the record with the given id.
+    Editing the status or comment of a record will overwrite current values with the supplied values.
+    Updating the location will append coordinates to location or overwrite existing coordinates. 
+    Any errors will invoke appropriate responses
   
-5. *Delete a given record:*
+##### *Delete a given record:*
 
-    *URL-PATH:* /red_flags/<id>/delete
+    URL-PATH: /red_flags/<id>/delete
  
-    *Method:* DELETE
+    Method: DELETE
   
-    *Responses:*
+    Responses:
   
-    If record with given id exists, request will delete the record and return a 'record deleted' message in the response, else it will return record not  found message
+    If record with given id exists, request will delete the record and return a 'record deleted' message in the 
+    response, else it will return record not  found message
   
-6. *Usage info:*
+##### *Usage info:*
 
-    *URL:* protocol://domain/version-prefix/
+    URL: protocol://domain/version-prefix/
 
     This base(default) root displays a simple user guide
 
-**ACCESS:**
+### ACCESS:
 
-This product, code and documentation can be accessed through the cloud links provided in the [links and related information section](PRODUCT LINKS AND RELATED INFORMATION) or locally when [installed][3]
+  This product, code and documentation can be accessed through the cloud links provided in the [links and related information section](PRODUCT LINKS AND RELATED INFORMATION) or locally when installed
 
-**TECHNOLOGIES USED**
+### TECHNOLOGIES USED
 
-- Python language
-- Flask framework
+  - Python language
+  - Flask framework
 
-[3]: **INSTALLATION**
+### INSTALLATION
 
-*Preparation:*
+ ##### *Preparation:*
 
 - If not yet done, install a suitable version of python 3.7 onward for your operating system [here](https://www.python.org/downloads/) or from any source
 - If using a windows system, install a suitable version of [git client](https://git-scm.com/downloads) for your system 
 
-*Clone the repo:*
+##### *Clone the repo:*
 
 - Open your editor and navigate to your preferred location for the app
 - Clone the api with the `git clone https://github.com/Anguandia/app-iReporter` command
 
-*Setup and activate your virtual environment:*
+##### *Setup and activate your virtual environment:*
 
 - Navigate to the cloned project directory with `cd app-iReporter` command
 - Run `virtualenv name` to setup a virtual environment, name is the name you choose for your virtual environment.
 - Run `source name/Scripts/activate` for windows else `name/bin/activate` to activate your virtual environment
 
-*Install project dependencies*
+##### *Install project dependencies*
 - Run `pip install -r requirements.txt` from the root folder to install all dependencies
-The application is successfully installed, you can proceed to [run][4] the application. If you need to deactivate the virtual environment, run the `deactivate` command from any directory
+The application is successfully installed, you can proceed to run the application. If you need to deactivate the virtual environment, run the `deactivate` command from any directory
 
-[4]: **RUNNING THE APPLICATION**
+### RUNNING THE APPLICATION
 - Run the command `python run.py` from the root directory or
 - Run the commands `export FLASK_APP=run.py` and `flask run` or in your root directory, create a .evn file with the command `touch .env`
 - In the .env file, save the lines `export FLASK_APP=run.py` and the command for activating the virtual environment.
 - If you have the .env file, you can always run the app with the `flask run` command and do not need to manually activate the virtual environment because autoenv is among the packages you installed with the pip -r ... command earlier, it will always activate the environment whenever you cd
-- The application is now running on localhost, copy the URL displayed in your terminal where the app is running and proceed to [making requests][5] and exploring the application
+- The application is now running on localhost, copy the URL displayed in your terminal where the app is running and proceed to making requests and exploring the application
 
-**USING AND EXPLORING THE APPLICATION**
+### USING AND EXPLORING THE APPLICATION
 
 Thurs far, no user interface has been developed for the application, hence it can be accessed through a number of http clients like cURL, postman, HTTPie, etc. cURL and HTTPie are command line clients while postman is a GUI client. Attention is given here to postman, but feel free to explore other options
 
-**Set up the http client**
+##### **Set up the http client**
 
 *cURL and HTTPie:* Checkout [cURL](https://curl.haxx.se/docs/manpage.html) and [HTTPie](https://httpie.org/) installation documentation and usage or from any suitable sources
 
 *postman:* Download and install postman [here](https://www.getpostman.com/downloads/).
 
-[5]: **Making requests with postman**
+##### Making requests with postman
 - In the main view pane, click on `headers` and enter the key `content-type` and value `application/json`
-- In the address bar enter the URL for the request you want to make, see [Features][1] for reference.
+- In the address bar enter the URL for the request you want to make, see Features for reference.
 - Select the method from button left of address bar
 - If a post/patch request, click on body and select the raw radio
 - Enter your request data in a json dictionary of format {"key": "value"}
 - Hit send and wait for the response
 
-**ACKNOWLEDGEMENTS:**
+### ACKNOWLEDGEMENTS:
 A great deal of indebtedness to Andela Uganda for providing not only an opportunity to explore and exploit talent, but also the environment, resources and nurturing
 
 A lot of contribution and mentoring from the learning facilitators at the Andela Level-up program is plainly unequaled in the realization of this product to this stage, especially the patience and understanding the facilitators unceasingly exercised
 
-**PRODUCT LINKS AND RELATED INFORMATION**
+### PRODUCT LINKS AND RELATED INFORMATION
 
 Code on github: [https://github.com/Anguandia/app-ireporter]
 Heroku link: [https://fast-ravine-44023.herokuapp.com/]
