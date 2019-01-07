@@ -126,14 +126,14 @@ def test_add_goeloc(client):
     # add geolocation
     resp = patch_json(
             client, '/api/v1/red_flags/1/location',
-            {'location': '03.2356 31.6524'}
+            {'location': '03.2356,31.6524'}
             )
     # check that geoloc added
     assert json_of_response(resp)['data'][0]['message'] ==\
         "added red-flag record's location"
     # modify geoloc
     patch_json(client, '/api/v1/red_flags/1/location', {
-            'location': '0.000 0.000'})
+            'location': '0.000,0.000'})
     resp1 = client.get('/api/v1/red_flags/1')
     # ascertain that geoloc updated to latest value
     assert 'N: 0.000, E: 0.000' in json_of_response(resp1)['data'][0][
@@ -239,7 +239,7 @@ def test_geolocation_format_checked(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     res = patch_json(
             client, '/api/v1/red_flags/1/location', {
-                    "location": "03.5623,31.5652"}
+                    "location": "03.5623 31.5652"}
                     )
     assert res.status_code == 400
     assert 'location must be of format' in json_of_response(res)['error']
@@ -314,3 +314,12 @@ def test_validate_image(client):
     resp = post_json(client, '/api/v1/red_flags', dat['video'])
     assert json_of_response(resp)['error'] ==\
         "'256' should be a valid image path"
+
+
+def test_validate_coordinates_as_float(client):
+    post_json(client, '/api/v1/red_flags', dat['basic'])
+    res = patch_json(client, '/api/v1/red_flags/1/location', dat['bad_coord'])
+    assert json_of_response(res)['error'] == 'coordinates must be floats'
+    res = patch_json(client, '/api/v1/red_flags/1/location', dat['gud_coord'])
+    assert json_of_response(res)['data'][0]['message'] ==\
+        "added red-flag record's location"
