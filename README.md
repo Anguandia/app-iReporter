@@ -4,98 +4,213 @@
 [![Coverage Status](https://coveralls.io/repos/github/Anguandia/app-iReporter/badge.svg)](https://coveralls.io/github/Anguandia/app-iReporter)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7405228269881aa69536/maintainability)](https://codeclimate.com/github/Anguandia/app-iReporter/maintainability)
 
-**INTRODUCTION**
+
+### INTRODUCTION
 
 This is the server side implementation of an online events logging system meant to work with any user interface that will communicate through JSON.
 
-*Main functionality*
+The complete application will provide a platform for any cncerned citizens to flag incidences of public concern to the attention of the concerned authorities, bodies and the general public in two categories; 
+corruption incidences coined as **red flags** and occurences that need intervention such as natural disasters, security threats, ailing public infrustructure, pandemics, and any other issues of public concern, collectively termed as **intervention reports** herin.
 
-The application takes in client data to produce and store public concern alerts sent in that can the be retrieved, some fields updated and records deleted.
+This current phase of the prject however focuses on modelling the red flags component of the entire application
 
-*URLs*
+### FEATURES AND OPERATIONS
 
-The application can create, retrieve, update and delete individual records and additionally retrieve all records
-These functions are exposed through defined URL routes as explained in the details section here under
+The current application takes in client report data to produce and store report records that can the be retrieved, some fields updated and records deleted. Details in Details section
 
-*Scope*
+##### *Operations summary*
+
+The following operations are provided for in the current version of the application:
+- Create a red flag record
+- Get all red flags
+- Get a given red flag by id
+- Update either of the location, status, or comment of a particular red flag selected by id
+- Delete a given red flag nselected by id
+
+##### *Error handling:*
+Rigorous checks against the followin errors with appropriate responses as detailed in the [documentation](https://app.swaggerhub.com/apis/Anguandia/default-title/1):
+- Creating duplicate records
+- Invoking wrong actions for valid routes
+- Wrong/invalid URLs
+- Wrong/invalid request data
+- Requests to operate on non existent records
+- Empty/wrong format intput where input is required
+
+##### *Scope*
 
 The application has no user component, authentication or authorization in this version but provides for full manipulation of records
 
-*User experience:*
+##### *User experience:*
 
 User experience is at the core of the design.The application furnishes informative responses to every request, pointing out possible errors in requests if not executed.
 responses are of two general categories; request success feedback and error responses, each producing the response code, requested resource (if required and successful) and the appropriate response message
 
-**ROUTES OPERATIONS AND BEHAVIORS**
+### URLs AND API VERSIONING
 
-1. *Create red-flag:*
-*URL: POST/api/v1/red_flags*
-
-The request body MUST at the very minimum contain values for red-flag properties of location, comment, and createdBy.
-Location: name of the place of occurrence of the alert event
-Comment: description of the event being reported
-CreatedBy: Identity of the user raising the alert. This will become fully automated when the user module is incorporated,as of this version, only any integer input will work
-If any of the three properties is missed, miss spelled, value not provided or value of wrong type provided, a corresponding response will be returned. Else, the record is created, with additional attributes filled with defaults and success response message returned.
-Of the remaining attributes, type(for record type), image and video can be explicitly supplied, while the remaining; id(record id), createdOn(time of reporting) and status(initially as draft) are system generated
- 
-2. *Get all red flags:*
-
-*URL: GET/api/v1/red_flags*
-
-This fetches and returns an array of all records along if any record(S) else response message informing of the absence of any records
-
-*3. Get individual record:*
-
-*URL: GET/api/v1/red_flags/<id>*
- 
-With an integer id of an existing record, fetches and returns the given record, else returns appropriate error message
+The URLs are of the general format protocol://domain/version-prefix/path
+- Protocol: https for cloud hosting and http for local hosting
+- domain: fast-ravine-44023.herokuapp.com cloud hosting and localhost:port=5000 default for localhost
+- version-prefix: api/v1. Version is v1 for current api, subsequent api's will be versioned as v2, v3, etc
+- path: resource/red_flag_id/endpoint
+  where:
+  - resource is red_flags for current version, subsequent api's will include 'intervention_records' and 'users' resources
+  - id an integer specifying the particular resource for a given operation. Used to identify a resource for a delete, update or get-one operation. Depending on the user interface, may have to be supplied explicitly in the URL
+  - endpoint: Specifies one of the record's properties of 'location', 'comment' and 'status' for update operations. Depending on user interface, may have to be explicitly supplied in the URL.
+  Endpoint also specifies delete for a delete action on the specified record
   
-*4. Edit a given record;*
+##### *Summary of valid URL paths*
+  - /api/v1/red_flags: create a red flag or get all red flags
+  - /api/v1/red_flags/red_flag_id: get or delete red flag specified by red_flag_id
+  - /api/v1/red_flags/red_flag_id/endpoint: update property endpoint of red flag specified by red_flag_id
+   
+### DETAILS
+##### *Create red-flag:*
 
-*URL: PATCH/api/v1/red_flags/<id>/<attribute>*
- 
-Edits the record specified attribute of the record with the given id. The editable attributes include comment, location and status.
-Editing the status and comment of a record will replace current values with the supplied values while updating the location ill append geolocation coordinated to the physical address given during creation of the record. The location value fore edit must be a string containing only the latitude and longitude respectively separated by a single space, else a corresponding error response will be returned.
+    URL-PATH: /red_flags
+
+    Method: POST
+    
+    Request body:
+
+    The request body MUST contain values for red-flag properties of location, comment, and createdBy.
+     location: name of the place of occurrence of the alert event, can not be only integers, must be descriptive
+     comment: description of the event being reported, must be descriptive, can be detailed
+     createdBy: Identity of the user raising the alert.
+     title: a one-line summary of the incident
+   
+    Responses:
   
-*5. Delete a given record:*
-
-*URL: DELETE/api/v1/red_flags/<id>/delete*
+     If any of errors, a corresponding response will be returned. Else, the record is created.
+     Additional attributes are filled with defaults and success response message returned.
+     Of the remaining attributes, type, image and video can be explicitly supplied.
+     The remaining, id, createdOn and status are system generated
  
-If record with given id exists, request will delete the record and return a 'record deleted' message in the response, else it will return record not  found message
+##### *Get all red flags:*
+
+    URL-PATH: protocal://domain/api/v1/red_flags
   
-*6. Usage info:*
+    Method: GET
+  
+    Responses:
+  
+    This fetches and returns an array of all records along if any record() else an empty array
 
-*URL: GET/api/v1/*
+##### *Get individual record:*
 
-This base(default) root displays a simple user guide
+    URL-PATH: /red_flags/<red_flag_id>. red_flag_id must be an integer
+  
+    Method: GET
+  
+    Responses:
+  
+    With an integer id of an existing record, returns single element array of the given record
+    If non existent, an empty array
+    Else if error in red_flag_id or resource name, returns appropriate error message
+  
+##### *Edit a given record:*
 
-**ERROR HANDLING**
-Errors are either in the request body(input data) or URL. The application does not assume values and attempt to correct errors but will identify the cause of each error and send a response with possible causes: Examples are:
-No body for post/patch request, response: empty request
-Empty or misspelled input attribute key for post/patch request, response: missing key for <attribute>, please check attribute or spelling
-Missing value for a mandatory attribute to a given post/patch request, response: missing <attribute> key
-Resource specified for operation non-existent, response: record unavailable
-Attempt to edit unauthorized attribute, response: <attribute> cannot be edited
-There is also a similar set of errors for URL errors
-In the event of multiple errors in a single request, the response will give the first error caught and subsequently display next error when the present has been cleared(subsequent requests). Example: Say an edit request specified an un-editable attribute as target for a non existent record and the attribute name was miss spelled in the request body, the responses in order on subsequent execution of the request after making the necessary correction will be missing key for <attribute>, <attribute> can not be edited and record not available
+    URL-PATH: /red_flags/<red_flag_id>/<property>
+ 
+    Method: PATCH
+  
+    Request body:
+  
+    The location value fore edit must be a string.
+    Format: latitude,longitude
+    
+    Action and responses
+    
+    Updates the specified attribute of the record with the given id.
+    Editing the status or comment of a record will overwrite current values with the supplied values.
+    Updating the location will append coordinates to location or overwrite existing coordinates. 
+    Any errors will invoke appropriate responses
+  
+##### *Delete a given record:*
 
-**ACCESS:**
-This product can be accessed through the cloud hosting link provided in the links and related information section
+    URL-PATH: /red_flags/<id>/delete
+ 
+    Method: DELETE
+  
+    Responses:
+  
+    If record with given id exists, request will delete the record and return a 'record deleted' message in the 
+    response, else it will return record not  found message
+  
+##### *Usage info:*
 
-**TECHNOLOGIES USED**
+    URL: protocol://domain/version-prefix/
 
-Python language
-Flask framework
+    This base(default) root displays a simple user guide
 
-**ACKNOWLEDGEMENTS:** A great deal of indebtedness to Andela uganda for providing not only an opportunity to explore and exploit talent, but also the environment, resources and narturing
+### ACCESS:
 
-A lot of contribution and mentoring from the learning facilaitators at the Andela Levelup program is plainly unequaled in the realization of this product to this stage, especially the patience and understanding the facilitators unceasingly exercised
+  This product, code and documentation can be accessed through the cloud links provided in the [links and related information section](PRODUCT LINKS AND RELATED INFORMATION) or locally when installed
 
-**PRODUCT LINKS AND RELATED INFORMATION**
+### TECHNOLOGIES USED
 
-Code: https://github.com/Anguandia/i-reporter
-Cloud hosting: https://fast-ravine-44023.herokuapp.com/
-Pivotal tracker: https://www.pivotaltracker.com/n/projects/2232384 Contains the project plan, implementation and management details
-Documentation: https://app.swaggerhub.com/apis/Anguandia/iReporter/1# Technical documentation of application detailing usage, parameters, expected behavior, requests and responses, etc.
+  - Python language
+  - Flask framework
+
+### INSTALLATION
+
+ ##### *Preparation:*
+
+- If not yet done, install a suitable version of python 3.7 onward for your operating system [here](https://www.python.org/downloads/) or from any source
+- If using a windows system, install a suitable version of [git client](https://git-scm.com/downloads) for your system 
+
+##### *Clone the repo:*
+
+- Open your editor and navigate to your preferred location for the app
+- Clone the api with the `git clone https://github.com/Anguandia/app-iReporter` command
+
+##### *Setup and activate your virtual environment:*
+
+- Navigate to the cloned project directory with `cd app-iReporter` command
+- Run `virtualenv name` to setup a virtual environment, name is the name you choose for your virtual environment.
+- Run `source name/Scripts/activate` for windows else `name/bin/activate` to activate your virtual environment
+
+##### *Install project dependencies*
+- Run `pip install -r requirements.txt` from the root folder to install all dependencies
+The application is successfully installed, you can proceed to run the application. If you need to deactivate the virtual environment, run the `deactivate` command from any directory
+
+### RUNNING THE APPLICATION
+- Run the command `python run.py` from the root directory or
+- Run the commands `export FLASK_APP=run.py` and `flask run` or in your root directory, create a .evn file with the command `touch .env`
+- In the .env file, save the lines `export FLASK_APP=run.py` and the command for activating the virtual environment.
+- If you have the .env file, you can always run the app with the `flask run` command and do not need to manually activate the virtual environment because autoenv is among the packages you installed with the pip -r ... command earlier, it will always activate the environment whenever you cd
+- The application is now running on localhost, copy the URL displayed in your terminal where the app is running and proceed to making requests and exploring the application
+
+### USING AND EXPLORING THE APPLICATION
+
+Thurs far, no user interface has been developed for the application, hence it can be accessed through a number of http clients like cURL, postman, HTTPie, etc. cURL and HTTPie are command line clients while postman is a GUI client. Attention is given here to postman, but feel free to explore other options
+
+##### **Set up the http client**
+
+*cURL and HTTPie:* Checkout [cURL](https://curl.haxx.se/docs/manpage.html) and [HTTPie](https://httpie.org/) installation documentation and usage or from any suitable sources
+
+*postman:* Download and install postman [here](https://www.getpostman.com/downloads/).
+
+##### Making requests with postman
+- In the main view pane, click on `headers` and enter the key `content-type` and value `application/json`
+- In the address bar enter the URL for the request you want to make, see Features for reference.
+- Select the method from button left of address bar
+- If a post/patch request, click on body and select the raw radio
+- Enter your request data in a json dictionary of format {"key": "value"}
+- Hit send and wait for the response
+
+### ACKNOWLEDGEMENTS:
+A great deal of indebtedness to Andela Uganda for providing not only an opportunity to explore and exploit talent, but also the environment, resources and nurturing
+
+A lot of contribution and mentoring from the learning facilitators at the Andela Level-up program is plainly unequaled in the realization of this product to this stage, especially the patience and understanding the facilitators unceasingly exercised
+
+### PRODUCT LINKS AND RELATED INFORMATION
+
+Code on github: [https://github.com/Anguandia/app-ireporter]
+
+Heroku link: [https://fast-ravine-44023.herokuapp.com/]
+
+Pivotal tracker: [https://www.pivotaltracker.com/n/projects/2232384] Contains the project plan, implementation and management details
+
+Documentation: [https://app.swaggerhub.com/apis/Anguandia/default-title/1#] Technical documentation of application detailing usage, parameters, expected behavior, requests and responses, etc.
 
 Licencing: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
