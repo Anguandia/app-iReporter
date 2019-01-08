@@ -10,7 +10,7 @@ class Implementation:
             'type': 'red-flag', 'status': 'draft', 'videos': [], 'images': [],
             'comment': ''}
         red_flag = RedFlag(
-            (len(red_flags)+1), data['location'], data['createdBy'],
+            (RedFlag.count + 1), data['location'], data['createdBy'],
             data['title']
             )
         red_flag.__setattr__('createdOn', datetime.datetime.now())
