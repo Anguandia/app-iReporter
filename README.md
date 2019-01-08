@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Anguandia/app-iReporter/badge.svg)](https://coveralls.io/github/Anguandia/app-iReporter)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7405228269881aa69536/maintainability)](https://codeclimate.com/github/Anguandia/app-iReporter/maintainability)
 
+
 ### INTRODUCTION
 
 This is the server side implementation of an online events logging system meant to work with any user interface that will communicate through JSON.
