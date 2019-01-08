@@ -1,16 +1,17 @@
-import os
 import pytest
 import json
 from tests.test_data import dat
 from app import implementation, routes
+from app.models import RedFlag
 
 
 @pytest.fixture(scope='function')
 def client():
     red_flags = implementation.red_flags
+    RedFlag.count = 0  #  Reset count for each test
     app = routes.app
     test_client = app.test_client()
-    red_flags.clear()
+    red_flags.clear()  #  Clear red_flags befor running each test
     cxt = app.app_context()
     cxt.push()
     yield test_client
