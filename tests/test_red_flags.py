@@ -19,25 +19,25 @@ def client():
     cxt.pop()
 
 
-# Encode test requests to json
+# function to send json post requests from dictionary data
 def post_json(client, url, json_dict):
     return client.post(
         url, data=json.dumps(json_dict), content_type='application/json'
         )
 
 
-# Decode json requests
+# function to decode json response
 def json_of_response(response):
     return json.loads(response.data.decode())
 
 
-# Encoding for put request
+# Send patch requests
 def patch_json(client, url, json_dict):
     return client.patch(
             url, data=json.dumps(json_dict), content_type='application/json')
 
 
-# Test red_flag creation and expected reponse; code and content
+# Test red_flag creation and expected response; code and content
 def test_red_flag_creation(client):
     response = post_json(client, 'api/v1/red_flags', dat['basic'])
     assert response.status_code == 201
@@ -49,7 +49,7 @@ def test_red_flag_creation(client):
 def test_optional_flag_properties_set_in_creation(client):
     post_json(client, '/api/v1/red_flags', dat['optional'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = client.get(f'/api/v1/red_flags/{id}')
     assert json_of_response(response)['data'][0]['type'] == 'intervention flag'
 
@@ -80,7 +80,7 @@ def test_get_single_flag_by_id(client):
             })
     assert json_of_response(flag)['Status'] == 201
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     resp = client.get(f'/api/v1/red_flags/{id}')
     assert json_of_response(resp)['data'][0]['comment'] == 'gavi money'
 
@@ -96,7 +96,7 @@ def test_get_single_flag_by_non_existent_id_fails(client):
 def test_can_edit_comment(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = patch_json(client, f'/api/v1/red_flags/{id}/comment', {
             'comment': 'teacher\'s salaries eaten'})
     assert json_of_response(response)['data'][0]['message'] ==\
@@ -107,7 +107,7 @@ def test_can_edit_comment(client):
 def test_cant_edit_resolved_flag(client):
     post_json(client, '/api/v1/red_flags', dat['resolved'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = patch_json(client, f'/api/v1/red_flags/{id}/comment', {
             'comment': 'teacher\'s salaries eaten'})
     assert json_of_response(response)['error'] == 'red flag already resolved'
@@ -118,7 +118,7 @@ def test_add_goeloc(client):
     # create record without geolocation details
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     # add geolocation
     resp = patch_json(
             client, f'/api/v1/red_flags/{id}/location',
@@ -128,7 +128,7 @@ def test_add_goeloc(client):
     assert json_of_response(resp)['data'][0]['message'] ==\
         "added red-flag record's location"
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     # modify geoloc
     patch_json(client, f'/api/v1/red_flags/{id}/location', {
             'location': '0.000,0.000'})
@@ -150,7 +150,7 @@ def test_correct_response_if_flag_to_be_edited_not_exist(client):
 def test_delete_flag(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = client.delete(f'/api/v1/red_flags/{id}')
     assert json_of_response(response)['data'][0]['message'] ==\
         'red-flag record has been deleted'
@@ -194,7 +194,7 @@ def test_validate_data_types(client):
 def test_cant_change_editable_field_value_to_null(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = patch_json(
             client, f'/api/v1/red_flags/{id}/comment', {'comment': ''}
             )
@@ -205,7 +205,7 @@ def test_cant_change_editable_field_value_to_null(client):
 def test_correct_response_if_key_for_field_missing(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = patch_json(
             client, f'/api/v1/red_flags/{id}/comment', {'location': 'here'}
             )
@@ -242,7 +242,7 @@ def test_wrong_method(client):
 def test_geolocation_format_checked(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     res = patch_json(
             client, f'/api/v1/red_flags/{id}/location', {
                     "location": "03.5623 31.5652"}
@@ -311,7 +311,7 @@ def test_validate_descriptive_fields_on_create(client):
 def test_status_validation(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     response = patch_json(
             client, f'/api/v1/red_flags/{id}/status', {'status': 'unknown'}
             )
@@ -327,7 +327,7 @@ def test_validate_image(client):
 def test_validate_coordinates_as_float(client):
     post_json(client, '/api/v1/red_flags', dat['basic'])
     flag = client.get('/api/v1/red_flags')
-    id = int(json_of_response(flag)['data'][0]['id'])
+    id = json_of_response(flag)['data'][0]['id']
     res = patch_json(client, f'/api/v1/red_flags/{id}/location',
                      dat['bad_coord'])
     assert json_of_response(res)['error'] == 'coordinates must be floats'
