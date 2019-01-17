@@ -1,5 +1,6 @@
 from .models.models import RedFlag
 import datetime
+import uuid
 
 red_flags = {}
 
@@ -10,7 +11,7 @@ class Implementation:
             'type': 'red-flag', 'status': 'draft', 'videos': [], 'images': [],
             'comment': ''}
         red_flag = RedFlag(
-            (RedFlag.count + 1), data['location'], data['createdBy'],
+            int(uuid.uuid4()), data['location'], data['createdBy'],
             data['title']
             )
         red_flag.__setattr__('createdOn', datetime.datetime.now())
