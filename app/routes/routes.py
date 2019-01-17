@@ -31,7 +31,7 @@ def home():
   '/api/v1/<resource>/<id>/<action>',
   methods=['GET', 'POST', 'PATCH', 'DELETE']
   )
-def wrongURL(resource, methods=['get'], id=None, action=None):
+def wrongURL(resource, methods=[], id=None, action=None):
     if Validation().validateRoute(resource):
         res = Validation().validateRoute(resource)
     elif request.method not in methods:
