@@ -315,7 +315,7 @@ def test_status_validation(client):
 def test_validate_image(client):
     resp = post_json(client, '/api/v1/red_flags', dat['video'])
     assert json_of_response(resp)['error'] ==\
-        "'256' should be a valid image path"
+        "'256' image path should be a string"
 
 
 def test_validate_coordinates_as_float(client):
