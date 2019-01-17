@@ -1,5 +1,5 @@
 from flask import jsonify, make_response
-from app.routes import app
+from app.routes.routes import app
 
 
 @app.errorhandler(400)

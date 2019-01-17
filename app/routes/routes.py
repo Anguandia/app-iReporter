@@ -1,6 +1,6 @@
 import os
 from flask import request, jsonify
-from .implementation import Implementation
+from app.implementation import Implementation
 from app.validation import Validation
 from app.wrappers import json_required
 from app import create_app
@@ -16,10 +16,10 @@ app = create_app('TESTING')
 def home():
     return jsonify({
       'create or get all flags':
-      '/red_flags',
+      'api/v1/red_flags',
       'get or delete single flag':
-      '/red_flags/id',
-      'edit flag': '/red_flags/id/field'
+      'api/v1/red_flags/id',
+      'edit flag': 'api/v1/red_flags/id/field'
       })
 
 
