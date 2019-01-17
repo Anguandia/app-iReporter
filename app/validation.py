@@ -1,4 +1,4 @@
-from .models import RedFlag
+from .models.models import RedFlag
 import datetime
 from .implementation import Implementation
 
@@ -33,7 +33,7 @@ class Validation:
             if not isinstance(pic, str):
                 return [
                     400, 'error',
-                    f"'{pic}' should be a valid image path"
+                    f"'{pic}' image path should be a string"
                     ]
 
     def validateRoute(self, resource):

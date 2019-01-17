@@ -1,4 +1,4 @@
-from .models import RedFlag
+from .models.models import RedFlag
 import datetime
 
 red_flags = {}

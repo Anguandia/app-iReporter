@@ -1,17 +1,18 @@
 import pytest
 import json
 from tests.test_data import dat
-from app import implementation, routes
-from app.models import RedFlag
+from app import implementation
+from app.routes import routes
+from app.models.models import RedFlag
 
 
 @pytest.fixture(scope='function')
 def client():
     red_flags = implementation.red_flags
-    RedFlag.count = 0  #  Reset count for each test
+    RedFlag.count = 0  # Reset count for each test
     app = routes.app
     test_client = app.test_client()
-    red_flags.clear()  #  Clear red_flags befor running each test
+    red_flags.clear()  # Clear red_flags befor running each test
     cxt = app.app_context()
     cxt.push()
     yield test_client
@@ -314,7 +315,7 @@ def test_status_validation(client):
 def test_validate_image(client):
     resp = post_json(client, '/api/v1/red_flags', dat['video'])
     assert json_of_response(resp)['error'] ==\
-        "'256' should be a valid image path"
+        "'256' image path should be a string"
 
 
 def test_validate_coordinates_as_float(client):
