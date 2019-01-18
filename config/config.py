@@ -11,6 +11,7 @@ class Development(Config):
 class Testing(Config):
     TESTING = True
     DEBUG = True
+    red_flags = {}
 
 
 class Production(Config):

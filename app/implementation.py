@@ -10,8 +10,10 @@ class Implementation:
         others = {
             'type': 'red-flag', 'status': 'draft', 'videos': [], 'images': [],
             'comment': ''}
+        long = int(uuid.uuid4())
+        id = str(long)[:4] + str(long)[-4:]
         red_flag = RedFlag(
-            int(uuid.uuid4()), data['location'], data['createdBy'],
+            int(id), data['location'], data['createdBy'],
             data['title']
             )
         red_flag.__setattr__('createdOn', datetime.datetime.now())
