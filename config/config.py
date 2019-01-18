@@ -1,3 +1,6 @@
+import os
+
+
 class Config:
     DEBUG = False
     CSRF_ENABLED = True
