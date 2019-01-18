@@ -12,14 +12,15 @@ class Development(Config):
 
 
 class Testing(Config):
-    DEBUG = True
     TESTING = True
+    DEBUG = True
     red_flags = {}
 
 
 class Production(Config):
     DEBUG = False
     TESTING = False
+
 
 app_config = {
     'DEVELOPMENT': Development, 'TESTING': Testing, 'PRODUCTION': Production

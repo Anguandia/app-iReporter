@@ -1,5 +1,6 @@
 from .models.models import RedFlag
 import datetime
+import uuid
 
 red_flags = {}
 
@@ -9,8 +10,10 @@ class Implementation:
         others = {
             'type': 'red-flag', 'status': 'draft', 'videos': [], 'images': [],
             'comment': ''}
+        long = int(uuid.uuid4())
+        id = str(long)[:4] + str(long)[-4:]
         red_flag = RedFlag(
-            (RedFlag.count + 1), data['location'], data['createdBy'],
+            int(id), data['location'], data['createdBy'],
             data['title']
             )
         red_flag.__setattr__('createdOn', datetime.datetime.now())
@@ -32,8 +35,7 @@ class Implementation:
         try:
             red_flag = red_flags[str(red_flag_id)]
             res = [200, 'data', [red_flag]]
-        except Exception as e:
-            print(e)
+        except KeyError:
             res = [200, 'data', []]
         return res
 
@@ -60,6 +62,6 @@ class Implementation:
             red_flags.pop(str(id))
             res = [200, 'data', [{'id': int(id), 'message':
                                  'red-flag record has been deleted'}]]
-        except Exception:
+        except KeyError:
             res = [404, 'error', 'red flag not found']
         return res
