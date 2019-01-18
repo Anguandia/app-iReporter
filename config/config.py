@@ -8,8 +8,8 @@ class Development(Config):
 
 
 class Testing(Config):
-    TESTING = True
     DEBUG = True
+    TESTING = True
 
 
 class Production(Config):
