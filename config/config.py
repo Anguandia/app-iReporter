@@ -10,11 +10,7 @@ class Development(Config):
 
 class Testing(Config):
     TESTING = True
-<<<<<<< HEAD
-    red_flags = {}
-=======
     DEBUG = True
->>>>>>> parent of 73a4201... rearrange config file
 
 
 class Production(Config):
