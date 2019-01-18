@@ -33,8 +33,7 @@ class Implementation:
         try:
             red_flag = red_flags[str(red_flag_id)]
             res = [200, 'data', [red_flag]]
-        except Exception as e:
-            print(e)
+        except KeyError:
             res = [200, 'data', []]
         return res
 
@@ -61,6 +60,6 @@ class Implementation:
             red_flags.pop(str(id))
             res = [200, 'data', [{'id': int(id), 'message':
                                  'red-flag record has been deleted'}]]
-        except Exception:
+        except KeyError:
             res = [404, 'error', 'red flag not found']
         return res

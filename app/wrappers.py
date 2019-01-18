@@ -1,15 +1,14 @@
 from functools import wraps
-from flask import request, abort, json
+from flask import request, jsonify
 
 
 def json_required(f):
-    from app import errors
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if request.json:
             v = f(*args, **kwargs)
         else:
-            v = abort(400)
+            v = jsonify({'Status': 400, 'error': 'empty request'}), 400
         return v
     return decorated_function

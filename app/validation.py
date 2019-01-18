@@ -1,4 +1,3 @@
-from .models.models import RedFlag
 import datetime
 from .implementation import Implementation
 
@@ -86,7 +85,7 @@ class Validation:
     def validateInt(self, value):
         try:
             int(value)
-        except Exception:
+        except ValueError:
             return 'id must be a number'
 
     def validateEdit(self, data, red_flag_id, field):
@@ -161,5 +160,5 @@ class Validation:
     def validateGeolocType(self, goeloc):
         try:
             [float(i) for i in goeloc]
-        except Exception:
+        except ValueError:
             return [400, 'error', 'coordinates must be floats']
