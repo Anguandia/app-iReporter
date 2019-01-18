@@ -5,11 +5,13 @@ class Config:
 
 class Development(Config):
     DEBUG = True
+    red_flags = {}
 
 
 class Testing(Config):
     DEBUG = True
     TESTING = True
+    red_flags = {}
 
 
 class Production(Config):
