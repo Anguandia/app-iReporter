@@ -1,6 +1,3 @@
-import datetime
-
-
 class RedFlag:
     def __init__(self, id, location, createdBy, title):
         self.id = id
